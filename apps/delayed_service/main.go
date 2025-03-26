@@ -34,5 +34,9 @@ func main() {
 		ctx.Status(200)
 	})
 
+	r.GET("/greeting", func(ctx *gin.Context) {
+		ctx.String(200, "Hello, World! It's working")
+	})
+
 	Must(r.Run())
 }
