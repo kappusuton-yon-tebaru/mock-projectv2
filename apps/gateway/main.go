@@ -29,12 +29,20 @@ func main() {
 
 	delayedServiceUrl, err := url.Parse(Getenv("DELAYED_SERVICE_URL", ""))
 	Must(err)
-
-	rp := httputil.NewSingleHostReverseProxy(delayedServiceUrl)
+	delayedServiceRp := httputil.NewSingleHostReverseProxy(delayedServiceUrl)
 
 	r.Any("/delayed-service/*any", gin.WrapF(func(w http.ResponseWriter, r *http.Request) {
 		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/delayed-service")
-		rp.ServeHTTP(w, r)
+		delayedServiceRp.ServeHTTP(w, r)
+	}))
+
+	service1ServiceUrl, err := url.Parse(Getenv("SERVICE1_SERVICE_URL", ""))
+	Must(err)
+	service1ServiceRp := httputil.NewSingleHostReverseProxy(service1ServiceUrl)
+
+	r.Any("/service1/*any", gin.WrapF(func(w http.ResponseWriter, r *http.Request) {
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/service1")
+		service1ServiceRp.ServeHTTP(w, r)
 	}))
 
 	Must(r.Run())
